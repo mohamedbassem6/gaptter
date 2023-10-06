@@ -1,0 +1,14 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="fullscreen" style="background-image: url({% static 'core/truman-404.png' %}); background-size: cover; padding-right: 10%; padding-left: 35%; position: absolute; top: 0; z-index: -1;">
+    <div class="flex-col" style="justify-content: center; align-items: start; height: 100%; color: #16161d;">
+        <h1 style="font-weight: 800; margin-bottom: 20px;">This page doesn't exist</h1>
+        <p>You have reached the end of Gaptter. There is nothing beyond this point.<br><br>But don’t worry, you can always go back to reality. Click the button below and you will be redirected to the homepage.</p>
+        <a href="/" style="text-decoration: underline !important;">Go back to reality</a>
+    </div>
+</div>
+
+{% endblock %}

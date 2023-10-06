@@ -1,0 +1,259 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}{% endblock %}Gaptter</title>
+
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{% static 'core/favicon.ico' %}" />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet" />
+
+        <link
+            href="https://cdn.jsdelivr.xyz/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
+            crossorigin="anonymous" />
+        <script
+            src="https://cdn.jsdelivr.xyz/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+            crossorigin="anonymous"></script>
+
+        <link
+            href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css"
+            rel="stylesheet" />
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <link
+            rel="stylesheet"
+            type="text/css"
+            href="{% static 'core/styles.css' %}" />
+        <script src="{% static 'core/script.js' %}"></script>
+
+        {% block scripts_header %}{% endblock %}
+    </head>
+    <body>
+        {% if not 'login' in request.resolver_match.url_name and not 'register' in request.resolver_match.url_name and not 'logout' in request.resolver_match.url_name and not 'film_of_the_week_home' in request.resolver_match.url_name %}
+
+        <div class="header">
+            <div class="navbar-shadow"></div>
+            <div class="navigation-bar">
+                {% include "core/logo.html" %}
+
+                <div class="nav-items">
+                    {% if user.is_authenticated %}
+                        <form class="search-form" action="/search" method="get">
+                            <input type="search" name="query" placeholder="Search..." />
+                            <button type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 3 512 512"><path fill="CurrentColor" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+                            </button>
+                        </form>
+
+                        <div class="nav-option">
+                            <div id="notification-closer" class="nav-option-closer" style="display: none"></div>
+
+                            <div id="notification-btn" class="nav-btn">
+                                <span id="notification-dot" class="btn-dot{% if unread_notifications_count == 0 %} invisible{% endif %}">{{ unread_notifications_count }}</span>
+                                <svg height="1em" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 98.7 96.76"><path class="notif-bell" d="M88.18,64.89a7.77,7.77,0,1,1,0,15.53H10.54a7.77,7.77,0,1,1,0-15.53A3.89,3.89,0,0,0,14.4,61V37.7a34.95,34.95,0,1,1,69.9,0V61A3.88,3.88,0,0,0,88.18,64.89ZM35.76,80.42H62.94a13.59,13.59,0,1,1-27.18,0Z" /></svg>
+                            </div>
+
+                            <div id="notification-window" class="nav-option-window" style="display: none">
+                                <span style="font-size: 26px; font-family: 'DM Serif Display', 'Serif'; padding-left: 10px;">Notifications</span>
+                                <div id="notifications-container" class="notifications-container"></div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown-nav">
+                            <div class="dropdown-btn flex-row center" role="button">
+                                <div class="flex-row center">
+                                    <img class="profile-pic-round" style="width: 35px" src="{{ user.profile.profile_image.url }}" />
+                                    <span style="margin: 0 7.5px">{{ user.profile.name }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"> <path fill="CurrentColor" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z" /></svg>
+                                </div>
+                            </div>
+
+                            <ul class="dropdown-menu dropdown-nav-menu" aria-labelledby="dropdownMenuLink">
+                                <li>
+                                    <a class="dropdown-link" href="/profile/">Profile</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-link" href="/profile/watchlist/">Watchlist</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-link" href="/profile/settings/">Settings</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-link" href="/logout/">Log Out</a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="/login">Login</a>
+                        <span style="color: #6D1AFF; margin: 0 5px">/</span>
+                        <a href="/register">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+
+        <div id="messages-holder" class="messages-holder">
+            {% for message in messages %}
+            <div class="alerting-message {{ message.tags }}">
+                <div class="alerting-message-body">{{ message }}</div>
+                <button
+                    onclick="closeMessage(this)"
+                    class="close-btn"
+                    style="position: static; margin: 0">
+                    &times;
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% block content %} {% endblock %}
+
+        <script>
+            const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+            const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notifications/`;
+            const socket = new WebSocket(wsEndpoint);
+
+            // New event listener to capture incoming messages
+            socket.addEventListener("message", () => {
+                const notification_dot = document.getElementById("notification-dot");
+
+                notification_dot.innerHTML = parseInt(notification_dot.innerHTML, 10) + 1;
+
+                if (notification_dot.classList.contains("invisible")) {
+                    notification_dot.classList.remove("invisible");
+                }
+
+            });
+        </script>
+
+        {% if user.is_authenticated %}
+        <script>
+            function closeNotificationWindow(btn, btn_window, closer, notification_dot, notifications_container) {
+                btn.classList.remove("active");
+                btn_window.style.display = "none";
+                closer.style.display = "none";
+
+                if (!notification_dot.classList.contains("invisible")) {
+                    notification_dot.classList.add("invisible");
+                    notification_dot.innerHTML = "0";
+                }
+
+                notifications_container.innerHTML = "";
+            }
+
+            function openNotificationWindow(btn, btn_window, closer, notifications_container) {
+                $.ajax({
+                    url: "/notifications/get/",
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: "{{ csrf_token }}",
+                    },
+                    success: function (response) {
+                        const notifications = response.notifications;
+
+                        notifications.forEach((notification) => {
+                            let notification_element = '';
+                            if (notification.type === "like") {
+                                notification_element =
+                                    `<a href="/${notification.sender_username}" class="notification">
+                                    <div class="profile-holder-poster" style="position: relative; left: 0;">
+                                        <img class="profile-pic-round" style="width: 60px;" src="${notification.sender_profile_image}">
+                                        <div style="position: absolute; bottom: 0; right: 0; width: 20px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 366 366"><circle class="svg-like-col" cx="183" cy="183" r="183"/><path class="svg-white" d="m229.28,102c-32.24,0-45.91,22.85-45.91,22.85,0,0-13.66-22.85-45.91-22.85-27.53.24-49.82,22.44-50.18,49.96,0,62.35,96.08,112.31,96.08,112.31,0,0,96.08-49.96,96.08-112.31-.36-27.53-22.65-49.72-50.18-49.96Z"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-col">
+                                        <span style="font-weight: 300; line-height: normal;">
+                                                <b>${notification.sender_name}</b> liked your <b>${notification.film}</b> gapt.
+                                        </span>
+                                        <span class="notification-time">${notification.time} ago</span>
+                                    </div>`;
+                            } else if (notification.type === "reGapt") {
+                                notification_element =
+                                    `<a href="/${notification.sender_username}" class="notification">
+                                    <div class="profile-holder-poster" style="position: relative; left: 0;">
+                                        <img class="profile-pic-round" style="width: 60px;" src="${notification.sender_profile_image}">
+                                        <div style="position: absolute; bottom: 0; right: 0; width: 20px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 366 366"><circle class="svg-share-col" cx="183" cy="183" r="183"/><path class="svg-white" d="m199.87,242.37h-51.06c-9.36,0-17.02-7.66-17.02-17.02v-68.08h25.53c3.4,0,6.38-2.13,7.66-5.11s.43-6.81-1.7-9.36l-34.04-34.04c-.43-.43-.85-.85-1.28-1.28l-.43-.43c-.43,0-.43-.43-.85-.43s-.43,0-.85-.43q-.43,0-.85-.43c-1.28.43-2.13.43-3.4.43q-.43,0-.85.43-.43,0-.85.43s-.43,0-.85.43c0,0-.43,0-.43.43-.43,0-.85.43-1.28.85l-34.04,34.04c-2.55,2.55-3.4,5.96-1.7,9.36,1.28,2.98,4.25,5.11,7.66,5.11h25.53v68.08c0,18.72,15.32,34.04,34.04,34.04h51.06c4.68,0,8.51-3.83,8.51-8.51s-3.83-8.51-8.51-8.51Z"/><path class="cls-1" d="m284.11,213.44c-1.28-2.98-4.25-5.11-7.66-5.11h-25.53v-68.08c0-18.72-15.32-34.04-34.04-34.04h-51.06c-4.68,0-8.51,3.83-8.51,8.51s3.83,8.51,8.51,8.51h51.06c9.36,0,17.02,7.66,17.02,17.02v68.08h-25.53c-3.4,0-6.38,2.13-7.66,5.11s-.43,6.81,1.7,9.36l34.04,34.04,1.28,1.28.43.43c.43,0,.43.43.85.43s.43,0,.85.43q.43,0,.85.43h3.4q.43,0,.85-.43.43,0,.85-.43c.43,0,.43-.43.85-.43,0,0,.43,0,.43-.43l1.28-1.28,34.04-34.04c2.55-2.55,3.4-5.96,1.7-9.36Z"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-col">
+                                        <span style="font-weight: 300; line-height: normal;">
+                                                <b>${notification.sender_name}</b> reGapt'd your <b>${notification.film}</b> gapt.
+                                        </span>
+                                        <span class="notification-time">${notification.time} ago</span>
+                                    </div>`;
+                            } else if (notification.type === "follow") {
+                                notification_element =
+                                    `<a href="/${notification.sender_username}" class="notification">
+                                    <div class="profile-holder-poster" style="position: relative; left: 0;">
+                                        <img class="profile-pic-round" style="width: 60px;" src="${notification.sender_profile_image}">
+                                        <div style="position: absolute; bottom: 0; right: 0; width: 20px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 394 394"><circle class="svg-white" cx="197" cy="197" r="197"/><path class="svg-main-col" d="m394,197C394,88.2,305.8,0,197,0S0,88.2,0,197c0,63.12,29.69,119.31,75.87,155.36,28.1-35.89,71.8-58.97,120.91-58.97s92.99,23.17,121.08,59.18c46.33-36.05,76.14-92.32,76.14-155.57Zm-197.22,52.53c-40.64,0-73.58-32.94-73.58-73.58s32.94-73.58,73.58-73.58,73.58,32.94,73.58,73.58-32.94,73.58-73.58,73.58Z"/></svg>
+                                        </div>
+                                    </div>
+                                    <div class="flex-col">
+                                        <span style="font-weight: 300; line-height: normal;">
+                                                <b>${notification.sender_name}</b> started following you.
+                                        </span>
+                                        <span class="notification-time">${notification.time} ago</span>
+                                    </div>`;
+                            }
+
+                            if (! notification.read) {
+                                notification_element += `
+                                <div class="unseen-dot" style="width: 10px; margin-left: auto; flex-grow: 0; flex-shrink: 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 116 116"><circle fill="CurrentColor" cx="58" cy="58" r="58"/></svg>
+                                </div>`;
+                            }
+
+                            notification_element += '</a>';
+
+                            notifications_container.innerHTML += notification_element;
+                        });
+                    },
+                });
+
+                btn.classList.add("active");
+                btn_window.style.display = "block";
+                closer.style.display = "block";
+            }
+
+            const notification_btn = document.getElementById('notification-btn');
+            const notification_window = document.getElementById('notification-window');
+            const closer = document.getElementById('notification-closer');
+
+            const notification_dot = document.getElementById("notification-dot");
+            const notifications_container = document.getElementById("notifications-container");
+
+            notification_btn.addEventListener("click", () => {
+                    if (notification_btn.classList.contains("active")) {
+                        closeNotificationWindow(notification_btn, notification_window, closer, notification_dot, notifications_container);
+                    } else {
+                        openNotificationWindow(notification_btn, notification_window, closer, notifications_container);
+                    }
+
+                    closer.addEventListener("click", () => {
+                        closeNotificationWindow(notification_btn, notification_window, closer, notification_dot, notifications_container);
+                    });
+                });
+        </script>
+        {% endif %}
+    </body>
+</html>

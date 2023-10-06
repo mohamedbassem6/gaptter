@@ -1,0 +1,412 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ movie.title }} ({{ movie.year }}) &mdash; {% endblock %}
+
+
+{% block content %}
+
+<div class="fullscreen flex-col center bottom-shadow" style="margin-top: -139px;">
+    <img class="movie-backdrop" loading="eager"
+        src="https://image.tmdb.org/t/p/original{{ movie.backdrop }}">
+    <div class="flex-row movie-info-div">
+
+        {% if movie.poster %}
+        <div style="padding-right: 10px;">
+            <img class="poster" loading="eager" style="width: 170px; border-radius: 10px;"
+                src="https://image.tmdb.org/t/p/original{{ movie.poster }}"
+                alt="{{ movie.title }}">
+        </div>
+        {% endif %}
+
+        <div {% if movie.poster %}style="padding-left: 10px;"{% endif %}>
+
+            <h1 class="movie-title">{{ movie.title }}</h1>
+            <p class="movie-data">
+                {{ movie.year }}
+                {% if movie.year and movie.runtime or movie.year and movie.genres %}<span style="color: #66f;"> • </span>{% endif %}
+                {% if movie.runtime %}{{ movie.runtime }}{% endif %}
+                {% if movie.genres and movie.runtime %}<span style="color: #66f;"> • </span>{% endif %}
+                {% for genre in movie.genres %}{{ genre }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </p>
+
+
+            {% if movie.directors %}
+            
+            <p class="movie-directors">Directed by
+
+                {% for director in movie.directors %}
+                    <a href="/person/{{ director.tmdb_id }}"
+                        class="director-name">{{ director.name }}</a>{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+
+            </p>
+
+            {% endif %}
+
+
+            {% if movie.overview %}<p class="movie-overview">{{ movie.overview }}</p>{% endif %}
+
+            <div class="flex-row">
+                <button id="logBtn" class="movie-btn" data-bs-toggle="modal" data-bs-target="#LogModal" data-toggle="tooltip" data-bs-placement="bottom" title="Log Film">
+                    <svg id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 47.8 47.8"><path fill="CurrentColor"d="M44.3,20.4H27.4V3.5c0-1.9-1.6-3.5-3.5-3.5s-3.5,1.6-3.5,3.5V20.4H3.5c-1.9,0-3.5,1.6-3.5,3.5s1.6,3.5,3.5,3.5H20.4v16.9c0,1.9,1.6,3.5,3.5,3.5s3.5-1.6,3.5-3.5V27.4h16.9c1.9,0,3.5-1.6,3.5-3.5s-1.6-3.5-3.5-3.5Z" /></svg>
+                </button>
+
+                <div class="modal" id="LogModal" role="dialog" aria-labelledby="LogModal">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content card">
+                            <button type="button" class="close-btn" id="LogClose" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+
+                            <small style="font-weight: 300; font-size: small; color: gray;">Log...</small>
+                            <h1 class="movie-title">{{ movie.title }}</h1>
+
+                            
+                            <form class="log-form" action="/movie/{{ movie.id }}/log/" method="post">
+                                {% csrf_token %}
+
+                                {{ log_form.non_field_errors }}
+                                {% for field in log_form %}
+                                <div>
+                                    {{ field.label }}
+                                    {{ field }}
+                                    <span style="margin-left: 3px; font-weight: 200;">{{ field.help_text }}</span>
+                                </div>
+                                {% endfor %}
+                                
+                                <button class="form-bttn" style="margin-top: 20px;" type="submit">Add Log</button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="watchlistBtn" class="movie-btn" data-bs-toggle="modal" data-bs-target="#ListModal" data-toggle="tooltip" data-bs-placement="bottom" title="Add to List">
+                    <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24.06 19.91"><path
+                    fill="CurrentColor"
+                    d="M1.72,0C.78,.03,.03,.78,0,1.72c.03,.93,.79,1.67,1.72,1.68,.92-.01,1.67-.76,1.68-1.68-.01-.93-.75-1.69-1.68-1.72ZM7.85,.14c-.87,.01-1.57,.71-1.58,1.58,.01,.86,.71,1.54,1.57,1.53h14.51c.86,.02,1.56-.66,1.58-1.52h0c-.01-.88-.71-1.58-1.58-1.59H7.85ZM1.72,8.28c-.95,.01-1.71,.77-1.72,1.72,.03,.93,.79,1.67,1.72,1.68,.93,.07,1.73-.62,1.8-1.55,.07-.93-.62-1.73-1.55-1.8-.09,0-.17,0-.26,0v-.05Zm6.13,.1c-.87-.07-1.63,.58-1.7,1.45-.07,.87,.58,1.63,1.45,1.7,.08,0,.17,0,.25,0h14.5c.87,.07,1.63-.58,1.7-1.45s-.58-1.63-1.45-1.7c-.08,0-.17,0-.25,0H7.85ZM1.72,16.51c-.93,.01-1.69,.75-1.72,1.68,.03,.94,.78,1.69,1.72,1.72,.93-.04,1.66-.79,1.68-1.72-.01-.92-.76-1.67-1.68-1.68Zm6.13,.1c-.87-.07-1.63,.58-1.7,1.45-.07,.87,.58,1.63,1.45,1.7,.08,0,.17,0,.25,0h14.5c.87,.07,1.63-.58,1.7-1.45s-.58-1.63-1.45-1.7c-.08,0-.17,0-.25,0H7.85Z" /></svg>
+                </button>
+
+                <div class="modal" id="ListModal" role="dialog" aria-labelledby="ListModal">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content card">
+                            <button type="button" class="close-btn" id="ListClose" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+
+                            <small style="font-weight: 300; font-size: small; color: gray;">Add...</small>
+                            <h1 class="movie-title">{{ movie.title }}</h1>
+
+                            <a class="add-to-list-modal-link" href="/list/new"><svg style="margin-right: 5px;" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path fill="CurrentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>Create New List</a>
+                            
+                            <form id="list-form" class="list-form" style="margin-top: 0;" action="/movie/{{ movie.id }}/add/" method="post">
+                                {% csrf_token %}
+                                
+                                {% for list, film_in_list in user_lists %}
+                                <div class="add-to-list-option">
+                                    <input class="default-checkbox" id="{{ list.id }}" type="checkbox" name="lists_id" value="{{ list.id }}, True" {% if film_in_list %} checked {% endif %}>
+                                    <input id="{{ list.id }}_hidden" type="hidden" name="lists_id" value="{{ list.id }}, False">
+                                    <span class="checkbox"></span>
+                                    <div class="list-posters-holder">
+                                        {% for film in list.films.all|slice:":3" %}
+                                        <div class="poster-holder w70" style="{% if not forloop.first %} margin-left: -50px; {% endif %} z-index: {{ forloop.revcounter0 }}; padding: 0;">
+                                            <img class="poster" src="https://image.tmdb.org/t/p/w154{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="add-to-list-data">
+                                        <span>{{ list.title }}</span>
+                                        <span class="add-to-list-count">{{ list.count }} film{{ list.count|pluralize }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+
+                                <button class="form-bttn" style="margin-top: 20px;" type="submit">Add</button>
+                            </form>
+                            <script>
+                                let form = document.getElementById('list-form');
+                                form.addEventListener('submit', () => {
+                                    {% for list, film_in_list in user_lists  %}
+                                        if(document.getElementById('{{ list.id }}').checked) {
+                                            document.getElementById('{{ list.id }}_hidden').disabled = true;
+                                        }
+                                    {% endfor %}
+                                })
+                            </script>
+
+                        </div>
+                    </div>
+                </div>
+
+                <button id="favouriteBtn" class="movie-btn{% if is_favourite %} active{% endif %}"
+                    onclick="favouriteMovie()" data-toggle="tooltip" data-bs-placement="bottom" title="Favourite">
+                    <svg id="a"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 90 76"><path fill="CurrentColor"
+                            class="b"
+                            d="M66.5,0c-15.1,0-21.5,10.7-21.5,10.7,0,0-6.4-10.7-21.5-10.7C10.61,.11,.17,10.51,0,23.4c0,29.2,45,52.6,45,52.6,0,0,45-23.4,45-52.6-.17-12.89-10.61-23.29-23.5-23.4Z" /></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 20px;">
+    <div class="main" style="margin-left: 20%;">
+        <h1 class="title first">Gapts</h1>
+
+        {% if user.is_authenticated %}
+        <div class="card" style="width: 100%; margin-bottom: 20px;">
+            <form class="gapt-form" action="/movie/{{ movie.id }}/gapt/" method="post">
+                {% csrf_token %}
+                <div class="flex-row">
+                    <img class="profile-pic-round"
+                    style="width: 35px; height: 35px; margin-right: 10px;"
+                    src="{{ user.profile.profile_image.url }}">
+
+                    <input class="gapt-form-input" type="text" maxlength="512" name="content" autocomplete="off" placeholder="Write a gapt for {{ movie.title }}...">
+                </div>
+                <hr>
+                <button class="gapt-form-btn" style="float: right;" type="submit">Post</button>
+            </form>
+        </div>
+        {% endif %}
+
+        {% for gapt in gapts %}
+        <div class="review-card" name="gaptCard" data-id="{{ gapt.id }}">
+                    <div class="flex-row">
+                        <div class="review-card-l">
+                            <a href="/movie/{{ gapt.film.tmdb_id }}" class="poster-holder w130" style="display: block;">
+                                {% if gapt.film.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/w500{% if gapt.film.custom_poster_path %}{{ gapt.film.custom_poster_path }}{% else %}{{ gapt.film.poster_path }}{% endif %}" alt="{{ gapt.film.title }}">{% endif %}
+                            </a>
+                            <a href="/{{ gapt.user.username }}" class="profile-holder-poster">
+                                <img class="profile-pic-round profile-pic-border" style="width: 60px;" src="{{ gapt.user.profile.profile_image.url }}">
+                            </a>
+                        </div>
+                        <div class="review-card-r">
+                            <div class="review-info">
+                                <a href="/{{ gapt.user.username }}" class="review-card-user">{{ gapt.user.profile.name }}</a>
+                                <small>
+                                    <a href="/movie/{{ gapt.film.tmdb_id }}">{{ gapt.film.title }}</a> • {{ gapt.whenPosted }}
+                                </small>
+                            </div>
+                            <p dir="auto" class="review-card-paragraph">{{ gapt.content }}</p>
+                        </div>
+                    </div>
+
+                    <div class="review-card-bottom">
+        
+                        <div class="halfCol">
+                            <div role="button" name="like-btn" data-id="{{ gapt.id }}"
+                                class="review-card-btn like {% if gapt.liked %}active{% endif %}">
+                                <span class="review-card-icon">
+                                    <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="-4.5 -5 97.5 83.5">
+                                        <path class="b"
+                                            d="M66.5,0c-15.1,0-21.5,10.7-21.5,10.7,0,0-6.4-10.7-21.5-10.7C10.61,.11,.17,10.51,0,23.4c0,29.2,45,52.6,45,52.6,0,0,45-23.4,45-52.6-.17-12.89-10.61-23.29-23.5-23.4Z" />
+                                    </svg>
+                                </span>
+                                <span id="likes-counter">{{ gapt.getLikesCount }}</span>
+                            </div>
+                        </div>
+        
+                        <div
+                            style="border-left: 1px solid #343446; position: absolute; height:20px;"></div>
+        
+                        <div class="halfCol">
+                            <div role="button" name="reGapt-btn" data-id="{{ gapt.id }}"
+                                class="review-card-btn share {% if gapt.reGaptd %}active{% endif %}">
+                                <span class="review-card-icon">
+                                    <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 48.02 36.2"><path
+                                            fill="CurrentColor"
+                                            d="M28.01,32.1h-12c-2.2,0-4-1.8-4-4V12.1h6c.8,0,1.5-.5,1.8-1.2s.1-1.6-.4-2.2L11.41,.7l-.3-.3-.1-.1c-.1,0-.1-.1-.2-.1s-.1,0-.2-.1q-.1,0-.2-.1c-.3,.1-.5,.1-.8,.1q-.1,0-.2,.1t-.2,.1s-.1,0-.2,.1c0,0-.1,0-.1,.1-.1,0-.2,.1-.3,.2L.61,8.7C0,9.3-.19,10.1,.21,10.9c.3,.7,1,1.2,1.8,1.2h6V28.1c0,4.4,3.6,8,8,8h12c1.1,0,2-.9,2-2s-.9-2-2-2Z" /><path
+                                            fill="CurrentColor"
+                                            d="M47.81,25.3c-.3-.7-1-1.2-1.8-1.2h-6V8.1C40.01,3.7,36.41,.1,32.01,.1h-12c-1.1,0-2,.9-2,2s.9,2,2,2h12c2.2,0,4,1.8,4,4V24.1h-6c-.8,0-1.5,.5-1.8,1.2s-.1,1.6,.4,2.2l8,8,.3,.3,.1,.1c.1,0,.1,.1,.2,.1s.1,0,.2,.1q.1,0,.2,.1h.8q.1,0,.2-.1t.2-.1c.1,0,.1-.1,.2-.1,0,0,.1,0,.1-.1l.3-.3,8-8c.6-.6,.8-1.4,.4-2.2Z" /></svg>
+                                </span>
+                                <span id="shares-counter">{{ gapt.getReGaptsCount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        {% empty %}
+        <h5>There's nothing to show here!</h5>
+        {% endfor %}
+
+    </div>
+
+    <div class="sidebar-r">
+        <h1 class="title first">CAST</h1>
+        <div class="sidebar-div">
+            <span id="casts"
+                style="display: flex; flex-direction: row; flex-wrap: wrap;">
+
+                {% if movie.cast|length > 5 %}
+                    {% for actor in movie.cast|slice:':5' %}
+                        <div data-toggle="tooltip" title="{{ actor.character }}" class="card cast-card"><a href="/person/{{ actor.tmdb_id }}">{{ actor.name }}</a></div>
+                    {% endfor %}
+                    <span id="hidden-cast"
+                        style="display: none; flex-direction: row; flex-wrap: wrap;">
+
+                        {% for actor in movie.cast|slice:'5:' %}
+                            <div data-toggle="tooltip" title="{{ actor.character }}" class="card cast-card"><a href="/person/{{ actor.tmdb_id }}">{{ actor.name }}</a></div>
+                        {% endfor %}
+
+                    </span>
+                    <a onclick="showCast(this)" class="see-more">See More...</a>
+                {% else %}
+                    {% for actor in movie.cast %}
+                        <div data-toggle="tooltip" title="{{ actor.character }}" class="card cast-card"><a href="/person/{{ actor.tmdb_id }}">{{ actor.name }}</a></div>
+                    {% endfor %}
+                {% endif %}
+            </span>
+        </div>
+
+        {% if watched_by %}
+        <h1 class="title">WATCHED BY</h1>
+        <div class="sidebar-div">
+            {% for person in watched_by %}
+            <img class="profile-pic-round"
+                style="width: 35px; margin-right: 7.5px; margin-bottom: 7.5px;"
+                src="{{ person.profile.profile_image.url }}">
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const favourite_btn = document.getElementById('favouriteBtn');
+
+    favourite_btn.addEventListener('click', ()=> {
+        $.ajax({
+            url: '/movie/{{ movie.id }}/favourite/',
+            type: 'POST',
+            data: {
+              csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success: function(response) {
+              if (response.status === 'created') {
+                console.log('Film added successfully.');
+              } else if (response.status === 'removed') {
+                console.log('Film deleted successfully.');
+              }
+            },
+            error: function(xhr, errmsg, err) {
+              console.log('Failed to add or delete entry.');
+            }
+          });
+    });
+</script>
+
+<script>
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('log-date').value = today;
+</script>
+<script>
+            const messages_holder = document.getElementById("messages-holder");
+            
+            const like_btns = document.getElementsByName('like-btn');
+
+            like_btns.forEach((btn)=> {
+                btn.addEventListener('click', ()=> {
+                    const btn_counter = btn.lastElementChild;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gapt/like/',
+                        data: {
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                            gapt_id: btn.dataset.id,
+                            username: "{{ user.username }}"
+                        },
+                        success: (response) => {
+                            console.log(response.message)
+                            if (response.message == 1) {
+                                btn.classList.add('active');
+                                btn_counter.innerHTML++;
+                            }
+                            else if (response.message == -1) {
+                                btn.classList.remove('active');
+                                btn_counter.innerHTML--;
+                            }
+                        },
+                        error: (err) => {
+                            messages_holder.innerHTML += `<div class="alerting-message error">
+                                                              <div class="alerting-message-body">
+                                                                  ${err.message}
+                                                              </div>
+                                                              <button onclick="closeMessage(this)" class="close-btn" style="position: static; margin: 0;">&times;</button>
+                                                          </div>`;
+                        },
+                    });
+                });
+            });
+
+            const reGapt_btns = document.getElementsByName('reGapt-btn');
+
+            reGapt_btns.forEach((btn)=> {
+                btn.addEventListener('click', ()=> {
+                    const btn_counter = btn.lastElementChild;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gapt/reGapt/',
+                        data: {
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                            gapt_id: btn.dataset.id,
+                            username: "{{ user.username }}"
+                        },
+                        success: (response) => {
+                            console.log(response.message)
+                            if (response.message == 1) {
+                                btn.classList.add('active');
+                                btn_counter.innerHTML++;
+                            }
+                            else if (response.message == -1) {
+                                btn.classList.remove('active');
+                                btn_counter.innerHTML--;
+                            }
+                        },
+                        error: (err) => {
+                            messages_holder.innerHTML += `<div class="alerting-message error">
+                                                              <div class="alerting-message-body">
+                                                                  ${err.message}
+                                                              </div>
+                                                              <button onclick="closeMessage(this)" class="close-btn" style="position: static; margin: 0;">&times;</button>
+                                                          </div>`;
+                        },
+                    });
+                });
+            });
+
+</script>
+<script>
+    const options = {
+        rootMargin: '0px',
+        threshold: 1.0
+    };
+
+    const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.intersectionRatio > 0) {
+            let gapt_id = entry.target.dataset.id;
+
+            $.ajax({
+                type: 'POST',
+                url: '/gapt/seen/',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    gapt_id: gapt_id,
+                },
+                success: ()=> {},
+                error: ()=> {},
+            });
+        }
+
+    });
+    }, options);
+
+    const gapts = document.getElementsByName('gaptCard');
+
+    gapts.forEach((gapt)=> {
+        observer.observe(gapt);
+    })
+</script>
+
+{% endblock %}

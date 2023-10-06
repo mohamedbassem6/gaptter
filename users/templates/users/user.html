@@ -1,0 +1,349 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+        {% if target_user.profile.cover_image %}
+        <div class="user-backdrop-div bottom-shadow">
+            <img class="user-backdrop" src="{{ target_user.profile.cover_image.url }}">
+        </div>
+        {% endif %}
+
+        <div class="user-header" {% if target_user.profile.cover_image %}style="margin-top: -75px;"{% endif %}>
+            <div class="user-info">
+                <img class="profile-pic-round" style="width: 150px;"
+                    src="{{ target_user.profile.profile_image.url }}">
+                <div class="user-info-r">
+                    <a href="/profile"><h1 class="user-name">{{ target_user.profile.name }}</h1></a>
+                    <h4 class="user-handle">@{{ target_user.username }}</h5>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}<button id="FollowBtn" onclick="followBtn(this)" class="btn outline user-header-btn{% if doesFollow %} active{% endif %}">{% if doesFollow %}Following{% else %}Follow{% endif %}</button>{% endif %}
+
+        </div>
+
+        <div class="container margined" style="z-index: 0;">
+            <div class="sidebar-l">
+                <div class="card" style="width: 100%; padding-bottom: 25px;">
+                    {% if target_user.profile.bio %}<p dir="auto" class="user-bio">{{ target_user.profile.bio }}</p>{% endif %}
+                    <table class="table-container">
+                        <tr class="flex-row" style="justify-content: space-around;">
+                            <td class="flex-col center"><span class="user-data-counter">{{ target_user.profile.getFollowersCount }}</span><span class="user-data-type">Followers</span></td>
+                            <td class="flex-col center"><span class="user-data-counter">{{ target_user.profile.getFollowingCount }}</span><span class="user-data-type">Following</span></td>
+                        </tr>
+                        <tr class="flex-row" style="justify-content: space-around; margin-top: 20px;">
+                            <td class="flex-col center"><span class="user-data-counter">{{ films_count }}</span><span class="user-data-type">Films</span></td>
+                            <td class="flex-col center"><span class="user-data-counter">{{ gapts_count }}</span><span class="user-data-type">Gapts</span></td>
+                        </tr>
+                    </table>
+                </div>
+
+                {% if chronicle %}
+                <h1 class="title">Chronicle</h1>
+                <div class="sidebar-div">
+                    <div>
+
+                        {% for date, logs in chronicle.items %}
+                        <div class="career-year-block">
+                            <span class="career-year" style="min-width: 40px; font-size: 12.5px; margin-top: -1px;">{{ date|date:'j M' }}</span>
+
+                            <div class="career-year-activities">
+        
+                                {% for log in logs %}
+                                <div class="career-activity">
+                                    <div class="career-milestones">
+                                        <svg class="dot" id="a" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7.46 7.46"><circle fill="CurrentColor" cx="3.73" cy="3.73" r="3.73"/></svg>
+                                        <span class="vertical-line {% if forloop.parentloop.last and forloop.last %}last{% endif %}">
+                                            <svg style="height: 100%;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 79.55"><line class="vl-svg" x1=".5" x2=".5" y2="79.55"/></svg>
+                                        </span>
+                                    </div>
+                                    <div class="activity-details flex-row">
+                                        <a href="/movie/{{ log.film.tmdb_id }}" class="activity-film">
+                                            <span style="font-family: 'DM Serif Display', 'Serif'; display: inline; font-size: 15px;">{{ log.film.title }}</span>
+
+                                            {% if log.rating != 0 %}
+                                            <div class="rating-box">
+                                                <svg
+                                                    style="width: 7px; margin-bottom: 2px;"
+                                                    id="a" xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 41.92 40.07"><path
+                                                        fill="CurrentColor" class="b"
+                                                        d="M19.19,1.06c.52-.97,1.73-1.34,2.71-.82,.35,.19,.64,.47,.82,.82l5,10.74c.14,.31,.44,.53,.78,.57l11.76,1.44c1.09,.19,1.81,1.23,1.62,2.32-.07,.39-.25,.76-.53,1.04l-8.65,8.07c-.25,.24-.37,.59-.3,.93l2.26,11.62c.16,1.09-.6,2.11-1.7,2.26-.4,.06-.8,0-1.16-.18l-10.36-5.74c-.31-.18-.69-.18-1,0l-10.32,5.74c-.99,.49-2.19,.08-2.68-.92-.18-.36-.24-.77-.18-1.16l2.26-11.62c.07-.34-.05-.69-.3-.93L.56,17.17c-.77-.79-.75-2.06,.05-2.83,.29-.28,.65-.46,1.04-.53l11.75-1.44c.34-.04,.64-.26,.79-.57L19.19,1.06Z" /></svg>
+                                                <span>{{ log.rating }}</span>
+                                            </div>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+        
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="main">
+
+                {% if favourites %}
+                    <h1 class="title first">Favourites</h1>
+
+                    <div style="position: relative; padding: 0;">
+                        <ul class="favourites slider" style="padding-bottom: 10px;">
+
+                            {% for film in favourites %}
+                                <a href="/movie/{{ film.tmdb_id }}" class="poster-holder w130" style="margin-right: 10px;">
+                                    {% if film.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/w342{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">{% endif %}
+                                    <div class="poster-title">{{ film.title }}</div>
+                                </a>
+                            {% endfor %}
+
+                        </ul>
+                    </div>
+                {% endif %}
+
+                {% if lists %}
+                <div class="flex-row center" style="justify-content: space-between; width: 100%;">
+                    <h1 class="title {% if not favourites %}first{% endif %}">Lists</h1>
+                    <a href="/list/new" style="font-size: 12px;"><svg style="margin-right: 5px;" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path fill="CurrentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>Create New List</a>
+                </div>
+
+                <div class="flex-col">
+                    {% for list in lists %}
+                    <a href="/list/{{ list.id }}" {% if not forloop.last %}style="margin-bottom: 20px;"{% endif %}>
+                        <div class="flex-row center">
+                            <div class="list-posters-holder">
+                                {% for film in list.films.all|slice:":4" %}
+                                <div class="poster-holder w70" style="{% if not forloop.first %} margin-left: -40px; {% endif %} z-index: {{ forloop.revcounter0 }}; padding: 0;">
+                                    <img class="poster" src="https://image.tmdb.org/t/p/w154{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="flex-col" style="margin-left: 15px; z-index: 1;">
+                                <span style="font-family: 'DM Serif Display', 'Serif'; font-size: 20px; line-height: 24px;">{{ list.title }}</span>
+                                <span style="font-family: 'Inter', 'Sans Serif'; color: #b9b9b9; font-size: 11px; font-weight: 200; margin-top: 2px;">{{ list.count }} film{{ list.count|pluralize }}</span>
+                                <p class="list-profile-description" style="font-size: 13px; margin-bottom: 0; margin-top: 10px; z-index: 1; max-height: 3.2em; overflow: hidden;">{{ list.description }}</p>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <h1 class="title">Gapts</h1>
+                <div>
+
+                    {% for activity in gapts_activity %}
+                    <div class="review-card" name="gaptCard" data-id="{{ activity.gapt.id }}">
+                        {% if activity.type == 0 %}
+                        <div style="font-size: 12px; color: #b9b9b9; font-weight: 400; margin-bottom: 10px;">
+                            <svg height="0.8em" style="margin-right: 5px;" xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 48.02 36.2"><path
+                                fill="CurrentColor"
+                                d="M28.01,32.1h-12c-2.2,0-4-1.8-4-4V12.1h6c.8,0,1.5-.5,1.8-1.2s.1-1.6-.4-2.2L11.41,.7l-.3-.3-.1-.1c-.1,0-.1-.1-.2-.1s-.1,0-.2-.1q-.1,0-.2-.1c-.3,.1-.5,.1-.8,.1q-.1,0-.2,.1t-.2,.1s-.1,0-.2,.1c0,0-.1,0-.1,.1-.1,0-.2,.1-.3,.2L.61,8.7C0,9.3-.19,10.1,.21,10.9c.3,.7,1,1.2,1.8,1.2h6V28.1c0,4.4,3.6,8,8,8h12c1.1,0,2-.9,2-2s-.9-2-2-2Z" /><path
+                                fill="CurrentColor"
+                                d="M47.81,25.3c-.3-.7-1-1.2-1.8-1.2h-6V8.1C40.01,3.7,36.41,.1,32.01,.1h-12c-1.1,0-2,.9-2,2s.9,2,2,2h12c2.2,0,4,1.8,4,4V24.1h-6c-.8,0-1.5,.5-1.8,1.2s-.1,1.6,.4,2.2l8,8,.3,.3,.1,.1c.1,0,.1,.1,.2,.1s.1,0,.2,.1q.1,0,.2,.1h.8q.1,0,.2-.1t.2-.1c.1,0,.1-.1,.2-.1,0,0,.1,0,.1-.1l.3-.3,8-8c.6-.6,.8-1.4,.4-2.2Z" /></svg>
+                                <a href="/{{ activity.reGapter.username }}">{% if activity.reGapter.username == user.username %}You{% else %}{{ activity.reGapter.profile.name }}{% endif %}</a> reGapt'd
+                        </div>
+                        {% endif %}
+                        <div class="flex-row">
+                            <div class="review-card-l">
+                                <a href="/movie/{{ activity.gapt.film.tmdb_id }}" class="poster-holder w130">
+                                    {% if activity.gapt.film.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/w500{% if activity.gapt.film.custom_poster_path %}{{ activity.gapt.film.custom_poster_path }}{% else %}{{ activity.gapt.film.poster_path }}{% endif %}" alt="{{ activity.gapt.film.title }}">{% endif %}
+                                </a>
+                                <a href="/{{ activity.gapt.user.username }}" class="profile-holder-poster">
+                                    <img class="profile-pic-round profile-pic-border" style="width: 60px;" src="{{ activity.gapt.user.profile.profile_image.url }}">
+                                </a>
+                            </div>
+                            <div class="review-card-r">
+                                <div class="review-info">
+                                    <a href="/{{ activity.gapt.user.username }}" class="review-card-user">{{ activity.gapt.user.profile.name }}</a>
+                                    <small>
+                                        <a href="/movie/{{ activity.gapt.film.tmdb_id }}">{{ activity.gapt.film.title }}</a> • {{ activity.gapt.whenPosted }}
+                                    </small>
+                                </div>
+                                <p dir="auto" class="review-card-paragraph">{{ activity.gapt.content }}</p>
+                            </div>
+                        </div>
+
+                        <div class="review-card-bottom">
+            
+                            <div class="halfCol">
+                                <div role="button" name="like-btn" data-id="{{ activity.gapt.id }}"
+                                    class="review-card-btn like {% if activity.liked %}active{% endif %}">
+                                    <span class="review-card-icon">
+                                        <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="-4.5 -5 97.5 83.5">
+                                            <path class="b"
+                                                d="M66.5,0c-15.1,0-21.5,10.7-21.5,10.7,0,0-6.4-10.7-21.5-10.7C10.61,.11,.17,10.51,0,23.4c0,29.2,45,52.6,45,52.6,0,0,45-23.4,45-52.6-.17-12.89-10.61-23.29-23.5-23.4Z" />
+                                        </svg>
+                                    </span>
+                                    <span id="likes-counter">{{ activity.gapt.getLikesCount }}</span>
+                                </div>
+                            </div>
+            
+                            <div
+                                style="border-left: 1px solid #343446; position: absolute; height:20px;"></div>
+            
+                            <div class="halfCol">
+                                <div role="button" name="reGapt-btn" data-id="{{ activity.gapt.id }}"
+                                    class="review-card-btn share {% if activity.reGapted %}active{% endif %}">
+                                    <span class="review-card-icon">
+                                        <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 48.02 36.2"><path
+                                                fill="CurrentColor"
+                                                d="M28.01,32.1h-12c-2.2,0-4-1.8-4-4V12.1h6c.8,0,1.5-.5,1.8-1.2s.1-1.6-.4-2.2L11.41,.7l-.3-.3-.1-.1c-.1,0-.1-.1-.2-.1s-.1,0-.2-.1q-.1,0-.2-.1c-.3,.1-.5,.1-.8,.1q-.1,0-.2,.1t-.2,.1s-.1,0-.2,.1c0,0-.1,0-.1,.1-.1,0-.2,.1-.3,.2L.61,8.7C0,9.3-.19,10.1,.21,10.9c.3,.7,1,1.2,1.8,1.2h6V28.1c0,4.4,3.6,8,8,8h12c1.1,0,2-.9,2-2s-.9-2-2-2Z" /><path
+                                                fill="CurrentColor"
+                                                d="M47.81,25.3c-.3-.7-1-1.2-1.8-1.2h-6V8.1C40.01,3.7,36.41,.1,32.01,.1h-12c-1.1,0-2,.9-2,2s.9,2,2,2h12c2.2,0,4,1.8,4,4V24.1h-6c-.8,0-1.5,.5-1.8,1.2s-.1,1.6,.4,2.2l8,8,.3,.3,.1,.1c.1,0,.1,.1,.2,.1s.1,0,.2,.1q.1,0,.2,.1h.8q.1,0,.2-.1t.2-.1c.1,0,.1-.1,.2-.1,0,0,.1,0,.1-.1l.3-.3,8-8c.6-.6,.8-1.4,.4-2.2Z" /></svg>
+                                    </span>
+                                    <span id="shares-counter">{{ activity.gapt.getReGaptsCount }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            const lists_decription = document.querySelectorAll('.list-profile-description');
+
+            console.log(lists_decription);
+
+            lists_decription.forEach((description)=> {
+                if (description.innerHTML.length > 159) {
+                    description.innerHTML = description.innerHTML.slice(0, 159 - 3) + "...";
+                }
+            });
+        </script>
+
+        {% if user.is_authenticated %}
+        <script>
+            $(document).ready(function() {
+
+                $('#FollowBtn').click(function() {
+                    $.ajax({
+                        url: '/{{ target_user.username }}/follow/',
+                        type: 'POST',
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                    });
+                });
+
+            });
+        </script>
+        <script>
+            const messages_holder = document.getElementById("messages-holder");
+            
+            const like_btns = document.getElementsByName('like-btn');
+
+            like_btns.forEach((btn)=> {
+                btn.addEventListener('click', ()=> {
+                    const btn_counter = btn.lastElementChild;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gapt/like/',
+                        data: {
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                            gapt_id: btn.dataset.id,
+                            username: "{{ user.username }}"
+                        },
+                        success: (response) => {
+                            if (response.message == 1) {
+                                btn.classList.add('active');
+                                btn_counter.innerHTML++;
+                            }
+                            else if (response.message == -1) {
+                                btn.classList.remove('active');
+                                btn_counter.innerHTML--;
+                            }
+                        },
+                        error: (err) => {
+                            messages_holder.innerHTML += `<div class="alerting-message error">
+                                                              <div class="alerting-message-body">
+                                                                  ${err.message}
+                                                              </div>
+                                                              <button onclick="closeMessage(this)" class="close-btn" style="position: static; margin: 0;">&times;</button>
+                                                          </div>`;
+                        },
+                    });
+                });
+            });
+
+            const reGapt_btns = document.getElementsByName('reGapt-btn');
+
+            reGapt_btns.forEach((btn)=> {
+                btn.addEventListener('click', ()=> {
+                    const btn_counter = btn.lastElementChild;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gapt/reGapt/',
+                        data: {
+                            csrfmiddlewaretoken: "{{ csrf_token }}",
+                            gapt_id: btn.dataset.id,
+                            username: "{{ user.username }}"
+                        },
+                        success: (response) => {
+                            if (response.message == 1) {
+                                btn.classList.add('active');
+                                btn_counter.innerHTML++;
+                            }
+                            else if (response.message == -1) {
+                                btn.classList.remove('active');
+                                btn_counter.innerHTML--;
+                            }
+                        },
+                        error: (err) => {
+                            messages_holder.innerHTML += `<div class="alerting-message error">
+                                                              <div class="alerting-message-body">
+                                                                  ${err.message}
+                                                              </div>
+                                                              <button onclick="closeMessage(this)" class="close-btn" style="position: static; margin: 0;">&times;</button>
+                                                          </div>`;
+                        },
+                    });
+                });
+            });
+
+        </script>
+        <script>
+            const options = {
+                rootMargin: '0px',
+                threshold: 1.0
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio > 0) {
+                    let gapt_id = entry.target.dataset.id;
+    
+                    $.ajax({
+                        type: 'POST',
+                        url: '/gapt/seen/',
+                        data: {
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            gapt_id: gapt_id,
+                        },
+                        success: ()=> {},
+                        error: ()=> {},
+                    });
+                }
+
+            });
+            }, options);
+
+            const gapts = document.getElementsByName('gaptCard');
+
+            gapts.forEach((gapt)=> {
+                observer.observe(gapt);
+            })
+        </script>
+        {% endif %}
+
+{% endblock %}

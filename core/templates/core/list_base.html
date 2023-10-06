@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="flex-col container no-sidebars">
+    <div class="list-header">
+        {% block list_header_info %}{% endblock %}
+
+        {% if user.is_authenticated and not self_watchlist and list_count != 0 %}
+        <div class="flex-row center" style="column-gap: 15px;">
+            <div class="list-progress-text">
+                <span style="font-size: 10px; font-weight: 200; color: #b9b9b9;">You've watched</span>
+                <span style="font-size: 15px;">{{ watched_count }} out of {{ list_count }}</span>
+            </div>
+
+            <div class="list-progress-holder">
+                <div class="list-progress-bar" data-progress="{{ watched_percentage }}"></div>
+                <div class="list-progress-value">{{ watched_percentage }}<span style="font-size: 10px; font-weight: 200; margin-left: 1px;">%</span></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% block description %}
+    {% endblock %}
+
+    <div class="list-body">
+
+        
+        {% for film in list.films.all %}
+        <a href="/movie/{{ film.tmdb_id }}" class="poster-holder w130" style="margin: 7px;">
+            {% if film.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/w342{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">{% endif %}
+            <div class="poster-title">{{ film.title }}</div>
+        </a>
+
+
+        <!-- <a href="/movie/{{ film.tmdb_id }}">
+            <div class="movie-list-card">
+                <img class="background" src="https://image.tmdb.org/t/p/original{% if film.custom_backdrop_path %}{{ film.custom_backdrop_path }}{% else %}{{ film.backdrop_path }}{% endif %}" alt="">
+                <div class="movie-list-card-body">
+
+                    <img class="poster" style="width: 30%; margin-right: 15px;" src="https://image.tmdb.org/t/p/original/{{ film.poster_path }}" alt="">
+                    <div class="flex-col">
+                        {% comment %} <span class="movie-list-card-order"><span style="margin-right: 3px;">#</span>1</span> {% endcomment %}
+                        <span class="movie-list-card-title">{{ film.title }}</span>
+                    </div>
+                    
+                </div>
+            </div>
+        </a> -->
+        {% endfor %}
+
+
+    </div>
+</div>
+
+<script>
+    const progress_bar = document.querySelector('.list-progress-bar');
+    const progress_value = parseInt(progress_bar.dataset.progress);
+
+    const degree = (progress_value / 100) * 360;
+
+    progress_bar.style.setProperty('--progress', `${degree}deg`);
+
+    console.log(degree);
+</script>
+{% endblock %}

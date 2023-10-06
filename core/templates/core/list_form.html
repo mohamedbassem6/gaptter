@@ -1,0 +1,105 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block scripts_header %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container no-sidebars flex-col">
+    <h2 style="font-weight: 700;">Create New List</h2>
+    <form id="list-form" action="/list/new/" method="post">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div class="flex-row">
+            <div class="halfCol" style="padding-right: 25px; height: 100%; position: sticky; top: 10px;">
+                <div style="width: 100%;">
+                    <label for="{{ form.title.id_for_label }}">{{ form.title.label }} <span style="font-size: 10px; color: #b9b9b9; font-weight: 200;">(required)</span></label>
+                    
+                    {% if form.title.errors %}
+                        <div class="error">
+                            {{ form.title }}
+                        </div>
+                    {% else %}
+                        {{ form.title }}
+                    {% endif %}
+            
+                    {% for error in form.title.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                
+                <div style="width: 100%;">
+                    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                    
+                    {% if form.description.errors %}
+                        <div class="error">
+                            {{ form.description }}
+                        </div>
+                    {% else %}
+                        {{ form.description }}
+                    {% endif %}
+            
+                    {% for error in form.description.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+                </div>
+                
+                <div class="flex-row" style="width: 100%; margin-top: 10px;">
+                    <div style="position: relative; width: 15px; height: 15px; margin-right: 10px;">
+                        <input class="default-checkbox" style="margin: 0;" type="checkbox" id="{{ form.ordered.id_for_label }}" name="ordered">
+                        <span class="checkbox" style="width: inherit; height: inherit;"></span>
+                    </div>
+                    
+                    <label style="margin: 0; line-height: normal;" for="{{ form.ordered.id_for_label }}">{{ form.ordered.label }}</label>
+                </div>
+
+
+                
+                <div style="align-self: end; margin-top: 10px;">
+                    <button id="reset-btn" class="btn grey" style="font-size: 0.875rem;" type="reset">Reset</button>
+                    <button class="btn" style="font-size: 0.875rem;" type="submit">Create</button>
+                </div>
+                
+                
+            </div>
+            
+            <div class="halfCol" style="padding-left: 25px;">
+                <div style="width: 100%; height: 80px;">
+                    <input id="chosen-films-input" type="hidden" name="films">
+                    <label for="search-films-list">Add Films</label>
+    
+                    <div id="real-time-search-holder">
+                        <input id="real-time-search-input" type="text" autocomplete="off" dir="auto">
+                        <div class="invisible" id="search-results-box"></div>
+                    </div>
+    
+                </div>
+                
+                <ul id="chosen-films-box" data-state="empty">
+                    <li id="empty-state" style="text-align: center;">
+                        <h4>No films in your list yet.</h4>
+                        <p style="font-weight: 200; color: #b9b9b9; font-size: 14px; width: 70%; margin: 0 auto; line-height: 25px;">Start by using <a id="search-input-link">the field above</a>, or by clicking the 'Add to List' button on film pages.</p>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        
+    
+    </form>
+
+</div>
+
+<script>
+    const box = document.getElementById('chosen-films-box');
+
+    new Sortable(box, {
+        animation: 350,
+        ghostClass: 'dragged'
+    });
+</script>
+
+<script src="{% static 'core/real-time-search.js' %}"></script>
+
+{% endblock content %}

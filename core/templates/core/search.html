@@ -1,0 +1,150 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container flex-col no-sidebars" style="justify-content: start;">
+    <div class="flex-col">
+        <small style="color: #b9b9b9; font-size: x-small;">{{ resultsCount }} results found for</small>
+        <h1 style="font-family: 'DM Serif Display', 'Serif'; line-height: 35px; font-size: 35px;">{{ query | escape | title }}</h1>
+    </div>
+
+    <ul class="nav nav-underline" id="search-results-tabs" role="tablist">
+        <!-- <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-tab-pane" role="tab" aria-controls="all-tab-pane" aria-selected="true">All</a>
+        </li> -->
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="films-tab" data-bs-toggle="tab" data-bs-target="#films-tab-pane" role="tab" aria-controls="films-tab-pane" aria-selected="false">Films</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="people-tab" data-bs-toggle="tab" data-bs-target="#people-tab-pane" role="tab" aria-controls="people-tab-pane" aria-selected="false">People</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users-tab-pane" role="tab" aria-controls="users-tab-pane" aria-selected="false">Users</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="gapts-tab" data-bs-toggle="tab" data-bs-target="#gapts-tab-pane" role="tab" aria-controls="gapts-tab-pane" aria-selected="false">Gapts</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="search-results-tabs-content">
+        <div class="tab-pane fade show active" id="films-tab-pane" role="tabpanel" aria-labelledby="films-tab" tabindex="0">
+            {% for movie in movies.results %}
+            <div class="search-result-div">
+                <a href="/movie/{{ movie.id }}" class="poster-holder w130">
+                    {% if movie.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/original{{ movie.poster_path }}" alt="{{ movie.title }}">{% endif %}
+                </a>
+                <div class="flex-col" style="margin-left: 25px;">
+                    <div>
+                        <a href="/movie/{{ movie.id }}" style="font-weight: 700; font-size: 25px; line-height: 30px;">{{ movie.title }}</a>
+                        <small style="color: #b9b9b9; font-weight: 200;">{{ movie.release_date|slice:4 }}</small>
+                    </div>
+                    <p style="font-size: small; font-weight: 300; color: #b9b9b9; margin-top: 10px;">{{ movie.overview }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="tab-pane fade" id="people-tab-pane" role="tabpanel" aria-labelledby="people-tab" tabindex="0">
+            {% for person in people.results %}
+            <div class="search-result-div">
+                <a href="/person/{{ person.id }}" class="poster-holder w130">
+                    {% if person.profile_path %}<img class="poster" src="https://image.tmdb.org/t/p/original{{ person.profile_path }}" alt="{{ person.name }}">{% endif %}
+                </a>
+                <div class="flex-col" style="margin-left: 25px;">
+                    <a href="/person/{{ person.id }}" style="font-weight: 700; font-size: 25px; line-height: 30px;">{{ person.name }}</a>
+                    <p style="font-size: small; font-weight: 300; color: #b9b9b9; margin-top: 10px;">{{ movie.overview }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="tab-pane fade" id="users-tab-pane" role="tabpanel" aria-labelledby="users-tab" tabindex="0">
+            {% for user in users.results %}
+            <a class="search-result-div" href="/{{ user.username }}">
+                <img class="profile-pic-round" style="width: 75px;"
+                    src="{{ user.profile.profile_image.url }}">
+                <div class="flex-col" style="margin-left: 15px;">
+                    <span style="font-weight: 700; font-size: 25px; line-height: normal;">{{ user.profile.name }}</span>
+                    <span style="font-size: small; font-weight: 300; color: #b9b9b9;">@{{ user.username }}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div class="tab-pane fade" id="gapts-tab-pane" role="tabpanel" aria-labelledby="gapts-tab" tabindex="0">
+            {% for gapt in gapts.results %}
+            <div class="review-card" name="gaptCard" data-id="{{ gapt.id }}">
+                    {% if activity.type == 0 %}
+                    <div style="font-size: 12px; color: #b9b9b9; font-weight: 400; margin-bottom: 10px;">
+                        <svg height="0.8em" style="margin-right: 5px;" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 48.02 36.2"><path
+                            fill="CurrentColor"
+                            d="M28.01,32.1h-12c-2.2,0-4-1.8-4-4V12.1h6c.8,0,1.5-.5,1.8-1.2s.1-1.6-.4-2.2L11.41,.7l-.3-.3-.1-.1c-.1,0-.1-.1-.2-.1s-.1,0-.2-.1q-.1,0-.2-.1c-.3,.1-.5,.1-.8,.1q-.1,0-.2,.1t-.2,.1s-.1,0-.2,.1c0,0-.1,0-.1,.1-.1,0-.2,.1-.3,.2L.61,8.7C0,9.3-.19,10.1,.21,10.9c.3,.7,1,1.2,1.8,1.2h6V28.1c0,4.4,3.6,8,8,8h12c1.1,0,2-.9,2-2s-.9-2-2-2Z" /><path
+                            fill="CurrentColor"
+                            d="M47.81,25.3c-.3-.7-1-1.2-1.8-1.2h-6V8.1C40.01,3.7,36.41,.1,32.01,.1h-12c-1.1,0-2,.9-2,2s.9,2,2,2h12c2.2,0,4,1.8,4,4V24.1h-6c-.8,0-1.5,.5-1.8,1.2s-.1,1.6,.4,2.2l8,8,.3,.3,.1,.1c.1,0,.1,.1,.2,.1s.1,0,.2,.1q.1,0,.2,.1h.8q.1,0,.2-.1t.2-.1c.1,0,.1-.1,.2-.1,0,0,.1,0,.1-.1l.3-.3,8-8c.6-.6,.8-1.4,.4-2.2Z" /></svg>
+                             <a href="/{{ activity.reGapter.username }}">{% if activity.reGapter.username == user.username %}You{% else %}{{ activity.reGapter.profile.name }}{% endif %}</a> reGapt'd
+                    </div>
+                    {% endif %}
+                    <div class="flex-row">
+                        <div class="review-card-l">
+                            <a href="/movie/{{ gapt.film.tmdb_id }}" class="poster-holder w130" style="display: block;">
+                                {% if gapt.film.poster_path %}<img class="poster" src="https://image.tmdb.org/t/p/w500{% if gapt.film.custom_poster_path %}{{ gapt.film.custom_poster_path }}{% else %}{{ gapt.film.poster_path }}{% endif %}" alt="{{ gapt.film.title }}">{% endif %}
+                            </a>
+                            <a href="/{{ gapt.user.username }}" class="profile-holder-poster">
+                                <img class="profile-pic-round profile-pic-border" style="width: 60px;" src="{{ gapt.user.profile.profile_image.url }}">
+                            </a>
+                        </div>
+                        <div class="review-card-r">
+                            <div class="review-info">
+                                <a href="/{{ gapt.user.username }}" class="review-card-user">{{ gapt.user.profile.name }}</a>
+                                <small>
+                                    <a href="/movie/{{ gapt.film.tmdb_id }}">{{ gapt.film.title }}</a> • {{ gapt.whenPosted }}
+                                </small>
+                            </div>
+                            <p dir="auto" class="review-card-paragraph">{{ gapt.content }}</p>
+                        </div>
+                    </div>
+
+                    <div class="review-card-bottom">
+        
+                        <div class="halfCol">
+                            <div role="button" name="like-btn" data-id="{{ gapt.id }}"
+                                class="review-card-btn like {% if activity.liked %}active{% endif %}">
+                                <span class="review-card-icon">
+                                    <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="-4.5 -5 97.5 83.5">
+                                        <path class="b"
+                                            d="M66.5,0c-15.1,0-21.5,10.7-21.5,10.7,0,0-6.4-10.7-21.5-10.7C10.61,.11,.17,10.51,0,23.4c0,29.2,45,52.6,45,52.6,0,0,45-23.4,45-52.6-.17-12.89-10.61-23.29-23.5-23.4Z" />
+                                    </svg>
+                                </span>
+                                <span id="likes-counter">{{ gapt.getLikesCount }}</span>
+                            </div>
+                        </div>
+        
+                        <div
+                            style="border-left: 1px solid #343446; position: absolute; height:20px;"></div>
+        
+                        <div class="halfCol">
+                            <div role="button" name="reGapt-btn" data-id="{{ gapt.id }}"
+                                class="review-card-btn share {% if activity.reGapted %}active{% endif %}">
+                                <span class="review-card-icon">
+                                    <svg id="a" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 48.02 36.2"><path
+                                            fill="CurrentColor"
+                                            d="M28.01,32.1h-12c-2.2,0-4-1.8-4-4V12.1h6c.8,0,1.5-.5,1.8-1.2s.1-1.6-.4-2.2L11.41,.7l-.3-.3-.1-.1c-.1,0-.1-.1-.2-.1s-.1,0-.2-.1q-.1,0-.2-.1c-.3,.1-.5,.1-.8,.1q-.1,0-.2,.1t-.2,.1s-.1,0-.2,.1c0,0-.1,0-.1,.1-.1,0-.2,.1-.3,.2L.61,8.7C0,9.3-.19,10.1,.21,10.9c.3,.7,1,1.2,1.8,1.2h6V28.1c0,4.4,3.6,8,8,8h12c1.1,0,2-.9,2-2s-.9-2-2-2Z" /><path
+                                            fill="CurrentColor"
+                                            d="M47.81,25.3c-.3-.7-1-1.2-1.8-1.2h-6V8.1C40.01,3.7,36.41,.1,32.01,.1h-12c-1.1,0-2,.9-2,2s.9,2,2,2h12c2.2,0,4,1.8,4,4V24.1h-6c-.8,0-1.5,.5-1.8,1.2s-.1,1.6,.4,2.2l8,8,.3,.3,.1,.1c.1,0,.1,.1,.2,.1s.1,0,.2,.1q.1,0,.2,.1h.8q.1,0,.2-.1t.2-.1c.1,0,.1-.1,.2-.1,0,0,.1,0,.1-.1l.3-.3,8-8c.6-.6,.8-1.4,.4-2.2Z" /></svg>
+                                </span>
+                                <span id="shares-counter">{{ gapt.getReGaptsCount }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+            
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}

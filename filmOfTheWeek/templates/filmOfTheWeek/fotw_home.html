@@ -1,0 +1,73 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="fullscreen" style="padding: 40px;">
+    <div class="snap-container">
+        <section class="snap-item" id="section1">
+            <div class="bottom-shadow" style="width: 100%; height: 50%;">
+                <img style="width: 100%; height: inherit; object-fit: cover; position: absolute; z-index: -1; object-position: center 35%;" src="https://image.tmdb.org/t/p/original/axjpaTpve4K08kb5cBre3dNbe8O.jpg">
+            </div>
+            <div class="flex-row" style="padding: 0 100px; column-gap: 20px; margin-top: -50px;">
+                <a href="/movie/{{ film.tmdb_id }}" class="poster-holder w180">
+                    <img class="poster" src="https://image.tmdb.org/t/p/original{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">
+                </a>
+                <div class="flex-col" style="line-height: normal;">
+                    <span style="color: #b9b9b9; font-size: 12px; font-weight: 200;">Film of The Week #1</span>
+                    <span style="font-family: 'DM Serif Display', 'Serif'; font-size: 36px;">{{ film.title }}</span>
+                    <p style="font-weight: 400; font-size: 14px; margin-top: 10px;">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,</p>
+                </div>
+            </div>
+        </section>
+        <section class="snap-item" id="section2">
+            <div class="bottom-shadow" style="width: 100%; height: 50%;">
+                <img style="width: 100%; height: inherit; object-fit: cover; position: absolute; z-index: -1; object-position: center 35%;" src="https://image.tmdb.org/t/p/original/axjpaTpve4K08kb5cBre3dNbe8O.jpg">
+            </div>
+            <div class="flex-row" style="padding: 0 100px; column-gap: 20px; margin-top: -50px;">
+                <a href="/movie/{{ film.tmdb_id }}" class="poster-holder w180">
+                    <img class="poster" src="https://image.tmdb.org/t/p/original{% if film.custom_poster_path %}{{ film.custom_poster_path }}{% else %}{{ film.poster_path }}{% endif %}" alt="{{ film.title }}">
+                </a>
+                <div class="flex-col" style="line-height: normal;">
+                    <span style="color: #b9b9b9; font-size: 12px; font-weight: 200;">Film of The Week #1</span>
+                    <span style="font-family: 'DM Serif Display', 'Serif'; font-size: 36px;">{{ film.title }}</span>
+                    <p style="font-weight: 400; font-size: 14px; margin-top: 10px;">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,</p>
+                </div>
+            </div>
+        </section>
+        <div style="position: fixed; bottom: 70px; right: 70px; width: 140px;">
+            {% include "core/logo.html" %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Get all the snap items and their IDs
+const snapItems = document.querySelectorAll('.snap-item');
+const sectionIds = Array.from(snapItems).map(item => item.id);
+
+// Function to scroll to the next section
+function scrollToNextSection() {
+  const currentSection = document.querySelector(':target') || snapItems[0];
+  const currentIndex = sectionIds.indexOf(currentSection.id);
+  const nextIndex = (currentIndex + 1) % sectionIds.length;
+  document.getElementById(sectionIds[nextIndex]).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Function to scroll to the previous section
+function scrollToPreviousSection() {
+  const currentSection = document.querySelector(':target') || snapItems[0];
+  const currentIndex = sectionIds.indexOf(currentSection.id);
+  const previousIndex = (currentIndex - 1 + sectionIds.length) % sectionIds.length;
+  document.getElementById(sectionIds[previousIndex]).scrollIntoView({ behavior: 'smooth' });
+}
+
+// Listen for arrow key presses globally on the document
+document.addEventListener('keydown', event => {
+  if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+    scrollToNextSection();
+  } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+    scrollToPreviousSection();
+  }
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+# Ignore database files
+db.sqlite3
+data.json
+
+# Ignore environment variables
+.env
+
+# Ignore IDE-specific files
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore system files
+.DS_Store

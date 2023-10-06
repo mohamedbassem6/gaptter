@@ -1,0 +1,25 @@
+{% extends "core/list_base.html" %}
+
+{% block list_header_info %}
+    <div class="list-info">
+        <h1 class="list-title">{{ list.title }}</h1>
+        <div class="list-user-info">
+            created by
+            <a class="flex-row center" style="margin-left: 5px;" href="/{{ list.user.username }}">
+                {% if user.is_authenticated and list.user.username == user.username %}
+                    You
+                {% else %}
+                <img class="profile-pic-round" style="width: 20px; margin-right: 7.5px;"
+                        src="{{ list.user.profile.profile_image.url }}">
+                        {{ list.user.profile.name }}
+                {% endif %}
+            </a>
+        </div>
+    </div>
+{% endblock %}
+
+{% block description %}
+    {% if list.description %}
+    <p class="list-description">{{ list.description }}</p>
+    {% endif %}
+{% endblock %}
